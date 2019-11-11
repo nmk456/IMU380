@@ -15,9 +15,12 @@ void setup() {
 
 void loop() {
     imu.readSensor();
-    Serial.print("gx: "); Serial.print(imu.getGyroX());
-    Serial.print("gy: "); Serial.print(imu.getGyroY());
-    Serial.print("gz: "); Serial.print(imu.getGyroZ());
+    Serial.print(" gx: "); Serial.print(imu.getGyroX());
+    Serial.print(" gy: "); Serial.print(imu.getGyroY());
+    Serial.print(" gz: "); Serial.print(imu.getGyroZ());
+    Serial.print(" ax: "); Serial.print(imu.getAccelX());
+    Serial.print(" ay: "); Serial.print(imu.getAccelY());
+    Serial.print(" az: "); Serial.print(imu.getAccelZ());
 
     Serial.println();
 }
