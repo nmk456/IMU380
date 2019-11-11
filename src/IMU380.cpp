@@ -3,17 +3,7 @@
 
 /*
 TODO:
-    getSerialNumber
-    selfTest
-    readSensor
     setGyroRange
-    float getAccelX
-    float getAccelY
-    float getAccelZ
-    float getGyroX
-    float getGyroY
-    float getGyroZ
-    float getTemp
 */
 
 IMU380::IMU380(SPIClass &bus, uint8_t csPin) {
@@ -43,6 +33,8 @@ int IMU380::begin() {
     writeRegister(RS_DYNAMIC_RANGE, 0x04); // +- 250 deg/s
     writeRegister(LOW_PASS_FILTER, 0x00); // Unfiltered output
 
+    _gyroScale = 1.0f/100.0f; // deg/s/ADU
+
     return 1;
 }
 
@@ -60,7 +52,7 @@ int IMU380::selfTest() {
 }
 
 // Write data to register at address
-int IMU380::writeRegister(uint8_t address, uint8_t data) {
+int IMU380::writeRegister(uint8_t address, uint8_t const &data) {
     // Begin transaction and select IMU380
     _spi->beginTransaction(settings);
     digitalWrite(_csPin, LOW);
@@ -84,7 +76,7 @@ int IMU380::writeRegister(uint8_t address, uint8_t data) {
 }
 
 // Reads data from register at address
-int IMU380::readRegister(uint8_t address, uint16_t data) {
+int IMU380::readRegister(uint8_t address, uint16_t &data) {
     // Begin transaction and select IMU380
     _spi->beginTransaction(settings);
     digitalWrite(_csPin, LOW);
@@ -98,4 +90,69 @@ int IMU380::readRegister(uint8_t address, uint16_t data) {
     _spi->endTransaction();
 
     return 1;
+}
+
+// Reads sensor data and update internal buffers
+int IMU380::readSensor() {
+    // Initiate burst mode
+    readRegister(BURST_MODE, _buffer);
+    readRegister(0x00, _gxadu);
+    readRegister(0x00, _gyadu);
+    readRegister(0x00, _gzadu);
+    readRegister(0x00, _axadu);
+    readRegister(0x00, _ayadu);
+    readRegister(0x00, _azadu);
+    readRegister(0x00, _tempadu);
+    readRegister(0x00, _tempadu);
+
+    _gx = ((float) _gxadu) * _accelScale;
+    _gy = ((float) _gyadu) * _accelScale;
+    _gz = ((float) _gzadu) * _accelScale;
+    _ax = ((float) _axadu) * _accelScale;
+    _ay = ((float) _ayadu) * _accelScale;
+    _az = ((float) _azadu) * _accelScale;
+
+    _temperature = ((float) _tempadu) * _tempScale + _tempOffset;
+
+    return 1;
+}
+
+// Gets temperature in deg C
+float IMU380::getTemp() {
+    return _temperature;
+}
+
+// Gets serial number as uint_16
+uint16_t IMU380::getSerialNumber() {
+    return _serialNumber;
+}
+
+// Return accel X value in m/s^2
+float IMU380::getAccelX() {
+    return _ax;
+}
+
+// Return accel Y value in m/s^2
+float IMU380::getAccelY() {
+    return _ay;
+}
+
+// Return accel Z value in m/s^2
+float IMU380::getAccelZ() {
+    return _az;
+}
+
+// Return gyro X value in deg/s
+float IMU380::getGyroX() {
+    return _gx;
+}
+
+// Return gyro Y value in deg/s
+float IMU380::getGyroY() {
+    return _gy;
+}
+
+// Return gyro Z value in deg/s
+float IMU380::getGyroZ() {
+    return _gz;
 }

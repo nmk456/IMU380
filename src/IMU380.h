@@ -11,6 +11,7 @@ class IMU380 {
         int setGyroRange();
         int readSensor();
         int selfTest();
+        uint16_t getSerialNumber();
         float getAccelX();
         float getAccelY();
         float getAccelZ();
@@ -20,6 +21,7 @@ class IMU380 {
         float getTemp();
     protected:
         uint16_t _buffer;
+        uint16_t _serialNumber;
 
         // SPI
         SPIClass *_spi;
@@ -28,10 +30,24 @@ class IMU380 {
         const uint8_t SPI_WRITE = 0b1000000;
         SPISettings settings = SPISettings(SPI_SPEED, MSBFIRST, SPI_MODE2);
 
+        // Data scale factors
+        float _accelScale = 1.0f/4000.0f; // g/ADU
+        float _gyroScale;
+        const float _tempScale = 0.7311f; // deg C/ADU
+        const float _tempOffset = 31.0f;
+
+        // Data buffer
+        uint16_t _axadu, _ayadu, _azadu;
+        uint16_t _gxadu, _gyadu, _gzadu;
+        uint16_t _tempadu;
+        uint16_t _status;
+        float _ax, _ay, _az;
+        float _gx, _gy, _gz;
+        float _temperature;
+
         // Private Functions
-        int writeRegister(uint8_t address, uint8_t data);
-        int readRegister(uint8_t address, uint16_t data);
-        int readBurstMode();
+        int writeRegister(uint8_t address, uint8_t const &data);
+        int readRegister(uint8_t address, uint16_t &data);
 
         // Read-only Registers
         const uint8_t X_RATE = 0x04;
