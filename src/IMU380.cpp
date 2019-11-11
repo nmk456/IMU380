@@ -42,11 +42,21 @@ int IMU380::begin() {
     writeRegister(SYSTEM_CLOCK, 0x01); // Internetal system clock
     writeRegister(RS_DYNAMIC_RANGE, 0x04); // +- 250 deg/s
     writeRegister(LOW_PASS_FILTER, 0x00); // Unfiltered output
+
+    return 1;
 }
 
 // Initiate self test and check status register
-int selfTest() {
+int IMU380::selfTest() {
+    writeRegister(SELF_TEST, 0b00000100);
+    delay(100);
+    readRegister(STATUS, _buffer);
 
+    if(bitRead(_buffer, 5)) {
+        return 1;
+    } else {
+        return -1;
+    }
 }
 
 // Write data to register at address
