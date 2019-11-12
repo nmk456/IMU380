@@ -44,6 +44,7 @@ class IMU380 {
         int setGyroRange(GyroRange range);
         int setFilter(Filter filter);
         int setDataRate(ODR odr);
+        int setDataReady(bool enable, bool polarity);
         uint16_t getSerialNumber();
         float getAccelX();
         float getAccelY();

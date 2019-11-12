@@ -23,4 +23,5 @@ void loop() {
     Serial.print(" az: "); Serial.print(imu.getAccelZ());
 
     Serial.println();
+    delay(5);
 }

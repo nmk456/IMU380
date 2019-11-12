@@ -146,6 +146,11 @@ int IMU380::setDataRate(ODR odr) {
     return writeRegister(OUTPUT_DATA_RATE, odr);
 }
 
+// Configure data ready enable and polarity (high on data ready if true)
+int IMU380::setDataReady(bool enable, bool polarity) {
+    return writeRegister(DATA_READY, (uint8_t) (enable << 2) | (polarity << 1));
+}
+
 // Write data to register at address
 int IMU380::writeRegister(uint8_t address, uint8_t const &data) {
     // Begin transaction and select IMU380
