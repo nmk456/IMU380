@@ -38,7 +38,6 @@ class IMU380 {
 
         IMU380(SPIClass &bus, uint8_t csPin);
         int begin();
-        int setGyroRange();
         int readSensor();
         int selfTest();
         int setGyroRange(GyroRange range);
