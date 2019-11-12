@@ -10,13 +10,13 @@ The IMU380 is a discountinued near-tactical grade IMU that is intermitently avai
 
 All of these specifications come from the datasheet (found in the extras folder).
 
-| Angular Rate |   |
+| Gyro |   |
 | ------------ | - |
 | Range (deg/s) | +-200 |
 | Bias Instability (deg/hr) | < 10 |
 | Resolution (deg/s) | < 0.02 |
 
-| Acceleration | |
+| Accelerometer| |
 | --------------- | ------ |
 | Range (g) | +-4 |
 | Bias Instability (mg) | <0.02 |
@@ -37,7 +37,7 @@ All of these specifications come from the datasheet (found in the extras folder)
 
 Declaring the IMU380 object is necessary to use it. The SPI bus and CS pin used must be specified. The example below uses the default SPI bus and pin 10 as the CS pin.
 
-`IMU380 imu(SPI, 10);`
+```IMU380 imu(SPI, 10);```
 
 ### IMU Initialization
 
@@ -45,7 +45,7 @@ Declaring the IMU380 object is necessary to use it. The SPI bus and CS pin used 
 
 This function should be called once in your setup function. It initializes the SPI bus with the CS pin specified earlier, checks if the IMU is connected and runs a self test to see if the IMU is operational. If it returns a value other than 1, it may not be connected correctly.
 
-`int status = imu.begin();`
+```int status = imu.begin();```
 
 ### Read Sensor
 
@@ -53,7 +53,7 @@ This function should be called once in your setup function. It initializes the S
 
 This function updates the internal sensor values using the sensor's burst mode over SPI. It does not return any values, the function below is necessary to do that.
 
-`int status = imu.readSensor();`
+```int status = imu.readSensor();```
 
 ### Get Sensor Data
 
@@ -61,8 +61,8 @@ This function updates the internal sensor values using the sensor's burst mode o
 
 These functions get the accelerometer and gyro data from the internal buffers. The example below is for the X gyro and accel data, but there are similar function for all axes. The function returns a float with the accelerometer data in m/s^2 and the gyro data in deg/s.
 
-`float ax = imu.getAccelX();`
-`float gx = imu.getGyroX();`
+```float ax = imu.getAccelX();```
+```float gx = imu.getGyroX();```
 
 ### Self Test
 
@@ -70,13 +70,13 @@ These functions get the accelerometer and gyro data from the internal buffers. T
 
 This function runs the built in self test in the IMU. It will return 1 if the test if successfuly, and -1 if it is not. More elaborate testing functionality will be implemented in the future.
 
-`int status = imu.selfTest();`
+```int status = imu.selfTest();```
 
 ### Gyro Range
 
 **int setGyroRange(GyroRange range);**
 
-This function sets the output range and precision of the gyro, which are inversely related.
+This function sets the output range and precision of the gyro, which are inversely related. The table below lists the possible gyro ranges.
 
 | Range Name | Range (deg/s) | Precision (ADU/(deg/s)) |
 | - | - | - |
@@ -84,13 +84,13 @@ This function sets the output range and precision of the gyro, which are inverse
 | GYRO_RANGE_125DPS | 125  | 200 |
 | GYRO_RANGE_250DPS | 250  | 100 |
 
-`int status = setGyroRange(IMU380::GYRO_RANGE_250DPS);`
+```int status = setGyroRange(IMU380::GYRO_RANGE_250DPS);```
 
 ### Output Data Rate
 
 **int setDataRate(ODR odr);**
 
-This function sets the rate that the IMU outputs data over SPI.
+This function sets the rate that the IMU outputs data over SPI. The table below shows the names and corredsponding data rates and timing options.
 
 | ODR Name | Data Rate | Time |
 | - | - | - |
@@ -106,15 +106,28 @@ This function sets the rate that the IMU outputs data over SPI.
 | ODR_2HZ | 2 Hz | x ms |
 | ODR_1HZ | 1 Hz | x ms |
 
-`imu.setDataRate(IMU380::ODR_200HZ);`
+```imu.setDataRate(IMU380::ODR_200HZ);```
 
 ### Set Output Filter
 
-`imu.setFilter(IMU380::NO_FILTER);`
+**int setFilter(Filter filter);**
+
+This functions sets which built in filter the IMU uses. More info to come.
+
+```imu.setFilter(IMU380::NO_FILTER);```
 
 ### Data Ready Configuration
 
-`imu.setDataReady(false, false);`
+**int setDataReady(bool enable, bool polarity);**
+
+This function configures the data ready function on pin 7 of the IMU. The first argument enables or disables it, and the second argument changes the polarity. If `polarity` is set to true, the pin will be high when the IMU has data ready and low otherwise, and if `polarity` set to false, the pin will be low when data ready and high otherwise. The frequency at which the IMU will have new data ready is set by the `setDataRate()` function.
+
+```imu.setDataReady(false, false);```
 
 ### Get Serial Number
 
+**uint16_t getSerialNumber();**
+
+This function returns the serial number of the IMU. It returns the exact contents of the serial number register as an unsigned 16 bit integer.
+
+```int serialNumber = imu.getSerialNumber();```
