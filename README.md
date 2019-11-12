@@ -131,3 +131,9 @@ This function configures the data ready function on pin 7 of the IMU. The first 
 This function returns the serial number of the IMU. It returns the exact contents of the serial number register as an unsigned 16 bit integer.
 
 ```int serialNumber = imu.getSerialNumber();```
+
+## Sensor Orientation
+
+The sensor data is in the axes shown in the image below. This only applies when the sensor is in SPI mode.
+
+<img src="https://raw.githubusercontent.com/nmk456/IMU380/master/extras/IMU380_Orientation.PNG" alt="IMU Axes" width=500>
