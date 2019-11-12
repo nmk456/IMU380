@@ -137,3 +137,21 @@ This function returns the serial number of the IMU. It returns the exact content
 The sensor data is in the axes shown in the image below. This only applies when the sensor is in SPI mode.
 
 <img src="https://raw.githubusercontent.com/nmk456/IMU380/master/extras/IMU380_Orientation.PNG" alt="IMU Axes" width=500>
+
+## Examples
+
+* **BasicPrint**: gets data from IMU and prints it to serial. Also demonstrates configuration functions.
+
+## Electrical Connections
+
+This chart only lists the pins necessary to interface with the IMU using SPI. For information on the other pins, consult the datasheet.
+
+| IMU Pin | Function |
+| - | - |
+| 3 | SCLK (SPI Clock) |
+| 4 | MISO (SPI Data Out) |
+| 5 | MOSI (SPI Data In) |
+| 6 | SS (SPI Chip Select) |
+| 7 | Data Ready |
+| 10-12 | VIN (3-5 V) |
+| 13-15 | GND |
