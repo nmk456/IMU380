@@ -3,7 +3,7 @@
 
 /*
 TODO:
-    setGyroRange
+    data ready pin config
 */
 
 IMU380::IMU380(SPIClass &bus, uint8_t csPin) {
@@ -12,6 +12,7 @@ IMU380::IMU380(SPIClass &bus, uint8_t csPin) {
 }
 
 int IMU380::begin() {
+    // Setup SPI
     pinMode(_csPin, OUTPUT);
     digitalWrite(_csPin, HIGH);
     _spi->begin();
@@ -49,6 +50,100 @@ int IMU380::selfTest() {
     } else {
         return -1;
     }
+}
+
+// Set gyro range
+int IMU380::setGyroRange(GyroRange range) {
+    switch(range) {
+        case GYRO_RANGE_62DPS: {
+            if(writeRegister(RS_DYNAMIC_RANGE, 0x01) < 0) {
+                return -1;
+            }
+            _gyroScale = 1.0f/400.0f; // deg/s/ADU
+            break;
+        }
+        case GYRO_RANGE_125DPS: {
+            if(writeRegister(RS_DYNAMIC_RANGE, 0x02) < 0) {
+                return -1;
+            }
+            _gyroScale = 1.0f/200.0f; // deg/s/ADU
+            break;
+        }
+        case GYRO_RANGE_250DPS: {
+            if(writeRegister(RS_DYNAMIC_RANGE, 0x04) < 0) {
+                return -1;
+            }
+            _gyroScale = 1.0f/100.0f; // deg/s/ADU
+            break;
+        }
+    }
+    return 1;
+}
+
+// Set filter type
+int IMU380::setFilter(Filter filter) {
+    switch(filter) {
+        case NO_FILTER: {
+            if(writeRegister(LOW_PASS_FILTER, 0x00) < 0) {
+                return -1;
+            }
+            _filter = NO_FILTER;
+        }
+        case BARTLETT_40HZ: {
+            if(writeRegister(LOW_PASS_FILTER, 0x03) < 0) {
+                return -1;
+            }
+            _filter = BARTLETT_40HZ;
+        }
+        case BARTLETT_20HZ: {
+            if(writeRegister(LOW_PASS_FILTER, 0x04) < 0) {
+                return -1;
+            }
+            _filter = BARTLETT_20HZ;
+        }
+        case BARTLETT_10HZ: {
+            if(writeRegister(LOW_PASS_FILTER, 0x05) < 0) {
+                return -1;
+            }
+            _filter = BARTLETT_10HZ;
+        }
+        case BARTLETT_5HZ: {
+            if(writeRegister(LOW_PASS_FILTER, 0x06) < 0) {
+                return -1;
+            }
+            _filter = BARTLETT_5HZ;
+        }
+        case BUTTERWORTH_50HZ: {
+            if(writeRegister(LOW_PASS_FILTER, 0x30) < 0) {
+                return -1;
+            }
+            _filter = BUTTERWORTH_50HZ;
+        }
+        case BUTTERWORTH_20HZ: {
+            if(writeRegister(LOW_PASS_FILTER, 0x40) < 0) {
+                return -1;
+            }
+            _filter = BUTTERWORTH_20HZ;
+        }
+        case BUTTERWORTH_10HZ: {
+            if(writeRegister(LOW_PASS_FILTER, 0x50) < 0) {
+                return -1;
+            }
+            _filter = BUTTERWORTH_10HZ;
+        }
+        case BUTTERWORTH_5HZ: {
+            if(writeRegister(LOW_PASS_FILTER, 0x60) < 0) {
+                return -1;
+            }
+            _filter = BUTTERWORTH_5HZ;
+        }
+    }
+    return 1;
+}
+
+// Set output data rate
+int IMU380::setDataRate(ODR odr) {
+    return writeRegister(OUTPUT_DATA_RATE, odr);
 }
 
 // Write data to register at address

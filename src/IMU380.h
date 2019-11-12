@@ -6,11 +6,44 @@
 
 class IMU380 {
     public:
+        enum GyroRange {
+            GYRO_RANGE_62DPS,
+            GYRO_RANGE_125DPS,
+            GYRO_RANGE_250DPS
+        };
+        enum Filter {
+            NO_FILTER,
+            BARTLETT_40HZ,
+            BARTLETT_20HZ,
+            BARTLETT_10HZ,
+            BARTLETT_5HZ,
+            BUTTERWORTH_50HZ,
+            BUTTERWORTH_20HZ,
+            BUTTERWORTH_10HZ,
+            BUTTERWORTH_5HZ
+        };
+        enum ODR {
+            ODR_0HZ = 0x00,
+            ODR_200HZ = 0x01,
+            ODR_100HZ = 0x02,
+            ODR_50HZ = 0x03,
+            ODR_25HZ = 0x04,
+            ODR_20HZ = 0x05,
+            ODR_10HZ = 0x06,
+            ODR_5HZ = 0x07,
+            ODR_4HZ = 0x08,
+            ODR_2HZ = 0x09,
+            ODR_1HZ = 0x10
+        };
+
         IMU380(SPIClass &bus, uint8_t csPin);
         int begin();
         int setGyroRange();
         int readSensor();
         int selfTest();
+        int setGyroRange(GyroRange range);
+        int setFilter(Filter filter);
+        int setDataRate(ODR odr);
         uint16_t getSerialNumber();
         float getAccelX();
         float getAccelY();
@@ -22,6 +55,7 @@ class IMU380 {
     protected:
         uint16_t _buffer;
         uint16_t _serialNumber;
+        Filter _filter;
 
         // SPI
         SPIClass *_spi;
