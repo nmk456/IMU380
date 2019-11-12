@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <IMU380.h>
 
-IMU380 imu = IMU380(SPI, 10);
+IMU380 imu(SPI, 10);
 
 void setup() {
     int status = imu.begin();
@@ -11,6 +11,12 @@ void setup() {
         while(1);
     }
     Serial.println("IMU Initialized");
+
+    // Optional config functions
+    imu.setGyroRange(IMU380::GYRO_RANGE_250DPS);
+    imu.setFilter(IMU380::NO_FILTER);
+    imu.setDataRate(IMU380::ODR_200HZ);
+    imu.setDataReady(false, false);
 }
 
 void loop() {
@@ -23,5 +29,5 @@ void loop() {
     Serial.print(" az: "); Serial.print(imu.getAccelZ());
 
     Serial.println();
-    delay(5);
+    delay(50);
 }
