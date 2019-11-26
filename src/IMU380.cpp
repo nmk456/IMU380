@@ -18,7 +18,7 @@ int IMU380::begin() {
     _spi->begin();
 
     // Check if correct IMU
-    readRegister(PRODUCT_ID, _buffer);
+    readRegister(IMU_ID, _buffer);
     if(_buffer != 0x3810) {
         return -1;
     }

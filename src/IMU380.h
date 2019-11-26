@@ -97,7 +97,7 @@ class IMU380 {
         const uint8_t BURST_MODE = 0x3E;
         const uint8_t MANUF_CODE = 0x52;
         const uint8_t UNIT_CODE = 0x54;
-        const uint8_t PRODUCT_ID = 0x56;
+        const uint8_t IMU_ID = 0x56;
         const uint8_t SERIAL_NUMBER = 0x58;
 
         //Writable Registers
