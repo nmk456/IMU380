@@ -4,6 +4,9 @@
 IMU380 imu(SPI, 10);
 
 void setup() {
+    Serial.begin(115200);
+    while(!Serial);
+
     int status = imu.begin();
     if(status < 0) {
         Serial.print("IMU Error: ");

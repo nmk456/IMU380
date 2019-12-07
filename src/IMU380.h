@@ -60,19 +60,19 @@ class IMU380 {
         // SPI
         SPIClass *_spi;
         uint8_t _csPin;
-        const uint32_t SPI_SPEED = 2000000; // 2 MHz
-        const uint8_t SPI_WRITE = 0b1000000;
-        SPISettings settings = SPISettings(SPI_SPEED, MSBFIRST, SPI_MODE2);
+        const uint32_t SPI_SPEED = 500000; // 0.5 MHz
+        const uint8_t SPI_WRITE = 0b10000000;
+        SPISettings settings = SPISettings(SPI_SPEED, MSBFIRST, SPI_MODE3);
 
         // Data scale factors
-        float _accelScale = 1.0f/4000.0f; // g/ADU
+        float _accelScale = 9.807f/4000.0f; // ADU/g
         float _gyroScale;
         const float _tempScale = 0.7311f; // deg C/ADU
         const float _tempOffset = 31.0f;
 
         // Data buffer
-        uint16_t _axadu, _ayadu, _azadu;
-        uint16_t _gxadu, _gyadu, _gzadu;
+        int16_t _axadu, _ayadu, _azadu;
+        int16_t _gxadu, _gyadu, _gzadu;
         uint16_t _tempadu;
         uint16_t _status;
         float _ax, _ay, _az;

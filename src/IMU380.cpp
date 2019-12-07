@@ -1,11 +1,6 @@
 #include <Arduino.h>
 #include <IMU380.h>
 
-/*
-TODO:
-    data ready pin config
-*/
-
 IMU380::IMU380(SPIClass &bus, uint8_t csPin) {
     _spi = &bus;
     _csPin = csPin;
@@ -45,7 +40,7 @@ int IMU380::selfTest() {
     delay(100);
     readRegister(STATUS, _buffer);
 
-    if(bitRead(_buffer, 5)) {
+    if(!bitRead(_buffer, 5)) {
         return 1;
     } else {
         return -1;
@@ -165,14 +160,7 @@ int IMU380::writeRegister(uint8_t address, uint8_t const &data) {
     digitalWrite(_csPin, HIGH);
     _spi->endTransaction();
 
-    delay(10);
-
-    readRegister(address, _buffer);
-    if((uint8_t) _buffer == data) {
-        return 1;
-    } else {
-        return -1;
-    }
+    return 1;
 }
 
 // Reads data from register at address
@@ -182,7 +170,7 @@ int IMU380::readRegister(uint8_t address, uint16_t &data) {
     digitalWrite(_csPin, LOW);
 
     // Send address and read data
-    _spi->transfer16((uint16_t) address << 8);
+    _spi->transfer16(((uint16_t) address) << 8);
     data = _spi->transfer16(0x0000);
 
     // End transaction
@@ -194,25 +182,32 @@ int IMU380::readRegister(uint8_t address, uint16_t &data) {
 
 // Reads sensor data and update internal buffers
 int IMU380::readSensor() {
-    // Initiate burst mode
-    readRegister(BURST_MODE, _buffer);
-    readRegister(0x00, _gxadu);
-    readRegister(0x00, _gyadu);
-    readRegister(0x00, _gzadu);
-    readRegister(0x00, _axadu);
-    readRegister(0x00, _ayadu);
-    readRegister(0x00, _azadu);
-    readRegister(0x00, _tempadu);
-    readRegister(0x00, _tempadu);
+    // Begin transaction and select IMU380
+    _spi->beginTransaction(settings);
+    digitalWrite(_csPin, LOW);
 
-    _gx = ((float) _gxadu) * _accelScale;
-    _gy = ((float) _gyadu) * _accelScale;
-    _gz = ((float) _gzadu) * _accelScale;
+    // Start burst mode
+    _spi->transfer16(((uint16_t) BURST_MODE) << 8);
+    _status = _spi->transfer16(0x0000);
+    _gxadu = _spi->transfer16(0x0000);
+    _gyadu = _spi->transfer16(0x0000);
+    _gzadu = _spi->transfer16(0x0000);
+    _axadu = _spi->transfer16(0x0000);
+    _ayadu = _spi->transfer16(0x0000);
+    _azadu = _spi->transfer16(0x0000);
+    _tempadu = _spi->transfer16(0x0000);
+
+    _gx = ((float) _gxadu) * _gyroScale;
+    _gy = ((float) _gyadu) * _gyroScale;
+    _gz = ((float) _gzadu) * _gyroScale;
     _ax = ((float) _axadu) * _accelScale;
     _ay = ((float) _ayadu) * _accelScale;
     _az = ((float) _azadu) * _accelScale;
 
     _temperature = ((float) _tempadu) * _tempScale + _tempOffset;
+
+    digitalWrite(_csPin, HIGH);
+    _spi->endTransaction();
 
     return 1;
 }
