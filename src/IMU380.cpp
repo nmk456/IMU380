@@ -31,6 +31,10 @@ int IMU380::begin() {
 
     _gyroScale = 1.0f/100.0f; // deg/s/ADU
 
+    _gxb = 0, _gyb = 0, _gzb = 0;
+    _axb = 0, _ayb = 0, _azb = 0;
+    _axs = 1, _ays = 1, _azs = 1;
+
     return 1;
 }
 
@@ -197,12 +201,12 @@ int IMU380::readSensor() {
     _azadu = _spi->transfer16(0x0000);
     _tempadu = _spi->transfer16(0x0000);
 
-    _gx = ((float) _gxadu) * _gyroScale;
-    _gy = ((float) _gyadu) * _gyroScale;
-    _gz = ((float) _gzadu) * _gyroScale;
-    _ax = ((float) _axadu) * _accelScale;
-    _ay = ((float) _ayadu) * _accelScale;
-    _az = ((float) _azadu) * _accelScale;
+    _gx = ((float) _gxadu) * _gyroScale - _gxb;
+    _gy = ((float) _gyadu) * _gyroScale - _gyb;
+    _gz = ((float) _gzadu) * _gyroScale - _gzb;
+    _ax = (((float) _axadu) * _accelScale - _axb) * _axs;
+    _ay = (((float) _ayadu) * _accelScale - _ayb) * _ays;
+    _az = (((float) _azadu) * _accelScale - _azb) * _azs;
 
     _temperature = ((float) _tempadu) * _tempScale + _tempOffset;
 
@@ -250,4 +254,23 @@ float IMU380::getGyroY() {
 // Return gyro Z value in deg/s
 float IMU380::getGyroZ() {
     return _gz;
+}
+
+int IMU380::setBias(float gxb, float gyb, float gzb, float axb, float ayb, float azb) {
+    _gxb = gxb;
+    _gyb = gyb;
+    _gzb = gyb;
+    _axb = axb;
+    _ayb = ayb;
+    _azb = ayb;
+
+    return 1;
+}
+
+int IMU380::setScale(float axs, float ays, float azs) {
+    _axs = axs;
+    _ays = ays;
+    _azs = azs;
+
+    return 1;
 }

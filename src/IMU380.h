@@ -44,6 +44,8 @@ class IMU380 {
         int setFilter(Filter filter);
         int setDataRate(ODR odr);
         int setDataReady(bool enable, bool polarity);
+        int setBias(float gxb, float gyb, float gzb, float axb, float ayb, float azb);
+        int setScale(float axs, float ays, float azs);
         uint16_t getSerialNumber();
         float getAccelX();
         float getAccelY();
@@ -69,6 +71,11 @@ class IMU380 {
         float _gyroScale;
         const float _tempScale = 0.7311f; // deg C/ADU
         const float _tempOffset = 31.0f;
+
+        // Bias and scale corrections
+        float _gxb, _gyb, _gzb;
+        float _axb, _ayb, _azb;
+        float _axs, _ays, _azs;
 
         // Data buffer
         int16_t _axadu, _ayadu, _azadu;
